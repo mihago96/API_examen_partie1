@@ -1,23 +1,257 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
-  title: Football match management
+  title: Football match management;
   description: We want to specify the web service for managing matches in a football competition.
   version: 1.0.0
 servers:
-  - url: 'https://localhost.std23015.openAPI-part1.com'
+  - url: 'https://localhost.std23015.OpenAPI-part1.com'
+
 paths:
-  /Football:
+  /competitions:
+    post:
+      summary: Create a new competition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Competition'
+      responses:
+        '200':
+          description: Competition created successfully
+
     get:
+      summary: Get list of competitions
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCompetitions'
 
+  /teams:
+    post:
+      summary: Create a new team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '200':
+          description: Team created successfully
+    get:
+      summary: Get list of teams
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: teamName
+          in: query
+          schema:
+            type: string
 
+      responses:
+        '200':
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeams'
 
+  /teams/{teamId}/competitions:
+    post:
+      summary: Associate competitions with a team
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                competitionIds:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Competitions associated with the team successfully
 
+  /players:
+    post:
+      summary: Create a new player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      responses:
+        '200':
+          description: Player created successfully
+
+  /teams/{teamId}/players:
+    get:
+      summary: Get list of players in a team
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: playerName
+          in: query
+          schema:
+            type: string
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlayers'
+
+    post:
+      summary: Associate players with a team (Transfer)
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                playerIds:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Players transferred to the team successfully
 
 components:
   schemas:
-    match:
+    Competition:
       type: object
-      matchName:
-        type: string
-      country:
-        type: string
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        location:
+          type: string
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slogan:
+          type: string
+        competitions:
+          type: array
+          items:
+            type: string
+        players:
+          type: array
+          items:
+            type: string
+
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        number:
+          type: integer
+        strongFoot:
+          type: string
+          enum:
+            - Left
+            - Right
+
+    PaginatedCompetitions:
+      type: object
+      properties:
+        competitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competition'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+
+    PaginatedTeams:
+      type: object
+      properties:
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+
+    PaginatedPlayers:
+      type: object
+      properties:
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
