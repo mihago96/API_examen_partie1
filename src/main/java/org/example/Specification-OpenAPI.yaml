@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: Football match management
+  description: We want to specify the web service for managing matches in a football competition.
+  version: 1.0.0
+servers:
+  - url: 'https://localhost.std23015.openAPI-part1.com'
+paths:
+  /Football:
+    get:
+
+
+
+
+
+components:
+  schemas:
+    match:
+      type: object
+      matchName:
+        type: string
+      country:
+        type: string
